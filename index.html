@@ -1,8 +1,8 @@
->
-<html lang="el">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>HOLOGRAM CONTROL</title>
+<title>JARVIS HOLOGRAM AI</title>
 
 <style>
 body {
@@ -14,43 +14,27 @@ body {
 }
 
 h1 {
-  <!DOCTYPE html>
-<html lang="el">
-<head>
-<meta charset="UTF-8">
-<title>HOLOGRAM AI</title>
-
-<style>
-body {
-  margin: 0;
-  background: black;
-  color: cyan;
-  font-family: monospace;
-  text-align: center;
-}
-
-h1 {
-  margin-top: 30px;
+  margin-top: 40px;
   text-shadow: 0 0 20px cyan;
 }
 
 .panel {
   margin: 40px auto;
   width: 320px;
-  padding: 20px;
   border: 2px solid cyan;
+  padding: 20px;
   box-shadow: 0 0 20px cyan;
 }
 
 button {
   width: 100%;
-  margin: 10px 0;
   padding: 15px;
+  margin: 10px 0;
   background: black;
   border: 2px solid cyan;
   color: cyan;
-  font-size: 16px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 button:hover {
@@ -61,40 +45,61 @@ button:hover {
 .status {
   margin-top: 20px;
   color: lime;
-}
-
-.glow {
-  text-shadow: 0 0 10px cyan;
+  min-height: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>HOLOGRAM AI SYSTEM</h1>
+<h1>JARVIS HOLOGRAM AI</h1>
 
 <div class="panel">
 
 <button onclick="startVoice()">🎤 Start Voice Control</button>
 <button onclick="speak('System online')">🔊 Test Voice</button>
 
-<div class="status glow" id="status">STANDBY</div>
+<div class="status" id="status">STANDBY</div>
 
 </div>
 
 <script>
 
-// 🔊 TEXT TO SPEECH
-function speak(text){
-  let msg = new SpeechSynthesisUtterance(text);
-  msg.lang = "en-US";
-  msg.rate = 1;
-  window.speechSynthesis.speak(msg);
+// ==========================
+// 🔊 JARVIS VOICE SYSTEM
+// ==========================
 
-  document.getElementById("status").innerText = text;
+function speak(text){
+  window.speechSynthesis.cancel();
+
+  let msg = new SpeechSynthesisUtterance(text);
+
+  msg.lang = "en-US";
+  msg.rate = 0.95;
+  msg.pitch = 0.7;
+  msg.volume = 1;
+
+  let voices = window.speechSynthesis.getVoices();
+
+  let bestVoice =
+    voices.find(v => v.name.includes("Google")) ||
+    voices.find(v => v.lang === "en-US");
+
+  if(bestVoice){
+    msg.voice = bestVoice;
+  }
+
+  msg.onstart = () => {
+    document.getElementById("status").innerText = "JARVIS: " + text;
+  };
+
+  window.speechSynthesis.speak(msg);
 }
 
+// ==========================
 // 🎤 VOICE RECOGNITION
+// ==========================
+
 function startVoice(){
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -105,38 +110,71 @@ function startVoice(){
 
   recognition.start();
 
-  speak("Voice control activated");
+  speak("JARVIS online. How may I assist you?");
 
   recognition.onresult = function(event){
-    let command = event.results[event.results.length - 1][0].transcript.toLowerCase();
 
-    document.getElementById("status").innerText = "YOU: " + command;
+    let cmd = event.results[event.results.length - 1][0].transcript.toLowerCase();
+    document.getElementById("status").innerText = "YOU: " + cmd;
 
-    // 🔥 COMMANDS
-    if(command.includes("activate")){
-      speak("Hologram activated");
-    }
-
-    else if(command.includes("deactivate")){
-      speak("Hologram deactivated");
-    }
-
-    else if(command.includes("scan")){
-      speak("Scanning area");
-    }
-
-    else if(command.includes("hello")){
-      speak("Hello user");
-    }
-
-    else {
-      speak("Command not recognized");
-    }
+    handleCommand(cmd);
   };
 }
+
+// ==========================
+// 🧠 JARVIS BRAIN
+// ==========================
+
+function handleCommand(cmd){
+
+  if(cmd.includes("hello") || cmd.includes("hi")){
+    speak("Good day, sir. All systems are operational.");
+  }
+
+  else if(cmd.includes("who are you")){
+    speak("I am JARVIS, your artificial intelligence assistant.");
+  }
+
+  else if(cmd.includes("time")){
+    let t = new Date().toLocaleTimeString();
+    speak("The current time is " + t);
+  }
+
+  else if(cmd.includes("scan")){
+    speak("Scanning environment... No threats detected.");
+  }
+
+  else if(cmd.includes("activate")){
+    speak("Holographic system activated.");
+  }
+
+  else if(cmd.includes("deactivate")){
+    speak("Holographic system deactivated.");
+  }
+
+  else if(cmd.includes("thank")){
+    speak("Always at your service.");
+  }
+
+  else {
+    let replies = [
+      "I’m not sure I understand, sir.",
+      "Could you rephrase that?",
+      "Command not recognized.",
+      "Processing failed. No valid instruction."
+    ];
+
+    let r = replies[Math.floor(Math.random() * replies.length)];
+    speak(r);
+  }
+}
+
+// load voices fix
+window.speechSynthesis.onvoiceschanged = () => {
+  window.speechSynthesis.getVoices();
+};
 
 </script>
 
 </body>
 </html>
-
